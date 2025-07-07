@@ -17,16 +17,19 @@ PROMPT_TEMPLATE = """Q: {question}\nA: {draft}\n\nWas the above answer correct a
 
 REVISION_TEMPLATE = """Q: {question}\nCritique: {critique}\n\nPlease provide an improved answer.\nA: """
 
-def generate(model, tok, prompt, max_new=64):
+def generate(model, tok, prompt, max_new=32):
     ids = tok(prompt, return_tensors="pt").to(model.device)
-    out = model.generate(**ids, max_new_tokens=max_new, temperature=0.7)
+    out = model.generate(**ids, max_new_tokens=max_new)
     return tok.decode(out[0], skip_special_tokens=True)
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Self-feedback demo")
     parser.add_argument("--question", type=str, default="What is 2 + 2?")
+    parser.add_argument("--no_run", action="store_true", help="Parse args and exit (tests)")
     args = parser.parse_args()
+    if args.no_run:
+        return
 
     tok = AutoTokenizer.from_pretrained(MODEL)
     model = AutoModelForCausalLM.from_pretrained(MODEL)
