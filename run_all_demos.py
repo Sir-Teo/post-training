@@ -29,8 +29,9 @@ ORDER = [
 ]
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Run all demo scripts in lightweight mode")
     parser.add_argument("--lines", type=int, default=8, help="Lines of output to show per demo")
+    parser.add_argument("--full", action="store_true", help="Run demos fully (may be slow)")
     args = parser.parse_args()
 
     for script in ORDER:
@@ -38,7 +39,10 @@ def main():
         print("\n" + "=" * 60)
         print(f">>> {script}")
         print("=" * 60)
-        result = subprocess.run([sys.executable, str(path)], capture_output=True, text=True, timeout=180)
+        cmd = [sys.executable, str(path)]
+        if not args.full:
+            cmd.append("--no_run")
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
         if result.returncode != 0:
             print(f"[ERROR] {script} exited with code {result.returncode}\n", result.stderr)
         else:
