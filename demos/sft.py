@@ -57,10 +57,13 @@ def sample_model(model, tokenizer, n_samples: int = 3):
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Supervised fine-tuning demo")
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--lr", type=float, default=5e-5)
+    parser.add_argument("--no_run", action="store_true", help="Exit after arg parsing (tests)")
     args = parser.parse_args()
+    if args.no_run:
+        return
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     tokenizer.pad_token = tokenizer.eos_token  # needed for batching
