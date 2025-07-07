@@ -11,6 +11,8 @@ concept discussed in the paper.
 Run:
     python demos/self_feedback.py --question "Define gravity in simple words."
 """
+import os
+os.environ.setdefault("TRANSFORMERS_NO_TORCHVISION_IMPORTS", "1")
 import argparse
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM

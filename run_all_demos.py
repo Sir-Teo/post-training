@@ -10,6 +10,7 @@ Usage:
 import argparse
 import subprocess
 import sys
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -48,11 +49,13 @@ def main():
         print(f">>> {script}")
         print("=" * 60)
         cmd = [sys.executable, str(path)]
+        env = dict(os.environ)
+        env.setdefault("TRANSFORMERS_NO_TORCHVISION_IMPORTS", "1")
         if not args.full:
             cmd.append("--no_run")
         else:
             cmd.extend(OVERRIDES.get(script, []))
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300, env=env)
         if result.returncode != 0:
             print(f"[ERROR] {script} exited with code {result.returncode}\n", result.stderr)
         else:
