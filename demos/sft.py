@@ -9,16 +9,13 @@ Run:
 Requirements (see requirements.txt): transformers, datasets, torch, tqdm
 """
 import argparse
+import os
+os.environ.setdefault("TRANSFORMERS_NO_TORCHVISION_IMPORTS", "1")
 from pathlib import Path
 
 import torch
 from datasets import load_dataset, Dataset
-from transformers import (
-    AutoTokenizer,
-    AutoModelForCausalLM,
-    TrainingArguments,
-    Trainer,
-)
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "simple_tasks.jsonl"
 MODEL_NAME = "distilgpt2"
@@ -76,6 +73,9 @@ def main():
 
     print("\n=== Samples before fine-tuning ===")
     sample_model(model, tokenizer)
+
+    # heavy training imports only when running
+    from transformers import TrainingArguments, Trainer
 
     training_args = TrainingArguments(
         output_dir="/tmp/sft-demo",
