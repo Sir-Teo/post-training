@@ -69,7 +69,7 @@ def main():
     ds = build_dataset()
     tokenized_ds = tokenize_dataset(tokenizer, ds)
 
-    model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+    model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, use_safetensors=True)
 
     print("\n=== Samples before fine-tuning ===")
     sample_model(model, tokenizer)

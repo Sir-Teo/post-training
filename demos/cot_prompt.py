@@ -28,7 +28,7 @@ def main():
         return
 
     tok = AutoTokenizer.from_pretrained(MODEL_NAME)
-    model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+    model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, use_safetensors=True)
 
     task = "If there are 12 apples and you eat 5, how many are left?"
 

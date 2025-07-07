@@ -32,9 +32,8 @@ def main():
     if args.no_run:
         return
 
-    tok = AutoTokenizer.from_pretrained(MODEL)
-    model = AutoModelForCausalLM.from_pretrained(MODEL)
-
+    tok = AutoTokenizer.from_pretrained(MODEL, use_fast=True)
+    model = AutoModelForCausalLM.from_pretrained(MODEL, use_safetensors=True)
     memory = deque(maxlen=MEM_SIZE)
     print("Episodic-memory chatbot – ask something (Ctrl+C to quit)")
     while True:

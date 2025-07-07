@@ -52,8 +52,8 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
 
     # Policy & reference models
-    policy_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
-    ref_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+    policy_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, use_safetensors=True)
+    ref_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, use_safetensors=True)
 
     ppo_config = PPOConfig(
         batch_size=2,

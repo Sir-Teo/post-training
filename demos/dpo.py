@@ -45,8 +45,8 @@ def main():
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     tokenizer.pad_token = tokenizer.eos_token
-    policy = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
-    ref_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+    policy = AutoModelForCausalLM.from_pretrained(MODEL_NAME, use_safetensors=True)
+    ref_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, use_safetensors=True)
 
     dpo_ds = build_pref_dataset(policy, tokenizer)
 

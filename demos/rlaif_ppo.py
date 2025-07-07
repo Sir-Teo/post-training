@@ -84,15 +84,15 @@ def main():
     tok = AutoTokenizer.from_pretrained(MODEL_NAME)
     tok.pad_token = tok.eos_token
 
-    base_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
-    reward_base = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+    base_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, use_safetensors=True)
+    reward_base = AutoModelForCausalLM.from_pretrained(MODEL_NAME, use_safetensors=True)
     reward_model = RewardHead(reward_base.transformer)
 
     dataset = build_pref_pairs(tok)
     train_reward_model(reward_model, tok, dataset, steps=args.pretrain_steps)
     reward_fn = get_reward_fn(reward_model, tok)
 
-    ref_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+    ref_model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, use_safetensors=True)
     ppo_cfg = PPOConfig(batch_size=2, forward_batch_size=1, learning_rate=1e-5)
     trainer = PPOTrainer(ppo_cfg, base_model, ref_model, tok)
 
