@@ -16,10 +16,11 @@ import argparse
 from pathlib import Path
 from typing import List
 
+import os
+os.environ.setdefault("TRANSFORMERS_NO_TORCHVISION_IMPORTS", "1")
 import torch
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from trl import PPOTrainer, PPOConfig
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "simple_tasks.jsonl"
 MODEL_NAME = "distilgpt2"
@@ -44,9 +45,15 @@ def build_ref_answers():
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="RLHF PPO demo")
     parser.add_argument("--steps", type=int, default=20, help="PPO optimisation steps")
+    parser.add_argument("--no_run", action="store_true", help="Exit after arg parsing (tests)")
     args = parser.parse_args()
+    if args.no_run:
+        return
+
+    # Import TRL lazily to avoid heavy deps during --no_run test mode
+    from trl import PPOTrainer, PPOConfig
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     tokenizer.pad_token = tokenizer.eos_token

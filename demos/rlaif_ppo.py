@@ -10,6 +10,8 @@ Run (~1-2 min CPU):
 """
 from __future__ import annotations
 import argparse
+import os
+os.environ.setdefault("TRANSFORMERS_NO_TORCHVISION_IMPORTS", "1")
 from pathlib import Path
 import random
 from typing import List
@@ -17,7 +19,7 @@ import torch
 import torch.nn as nn
 from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from trl import PPOConfig, PPOTrainer
+
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "simple_tasks.jsonl"
 MODEL_NAME = "distilgpt2"
@@ -76,10 +78,16 @@ def get_reward_fn(reward_model, tokenizer):
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="RLAIF PPO demo")
     parser.add_argument("--pretrain_steps", type=int, default=30)
     parser.add_argument("--ppo_steps", type=int, default=20)
+    parser.add_argument("--no_run", action="store_true", help="Exit after arg parsing (tests)")
     args = parser.parse_args()
+    if args.no_run:
+        return
+
+    # Lazy import after --no_run check
+    from trl import PPOConfig, PPOTrainer
 
     tok = AutoTokenizer.from_pretrained(MODEL_NAME)
     tok.pad_token = tok.eos_token
