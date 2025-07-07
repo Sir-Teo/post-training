@@ -1,5 +1,9 @@
 """Self-Feedback (Reflexion-style) demo.
 
+Uses the small `distilgpt2` model (safetensors weights) so the output
+text is understandable in English while remaining CPU-friendly.
+
+
 After generating an answer, the model critiques its own output and then
 produces a revised answer. Illustrates the "self-feedback" intermediate
 concept discussed in the paper.
@@ -11,7 +15,7 @@ import argparse
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-MODEL = "hf-internal-testing/tiny-random-GPT2"
+MODEL = "distilgpt2"
 
 PROMPT_TEMPLATE = """Q: {question}\nA: {draft}\n\nWas the above answer correct and well-reasoned? If not, briefly say why.\nCritique: """
 
