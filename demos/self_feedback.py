@@ -11,7 +11,7 @@ import argparse
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-MODEL = "distilgpt2"
+MODEL = "sshleifer/tiny-gpt2"
 
 PROMPT_TEMPLATE = """Q: {question}\nA: {draft}\n\nWas the above answer correct and well-reasoned? If not, briefly say why.\nCritique: """
 
