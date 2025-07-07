@@ -16,8 +16,9 @@ from typing import List
 
 import torch
 from datasets import load_dataset, Dataset
+import os
+os.environ.setdefault("TRANSFORMERS_NO_TORCHVISION_IMPORTS", "1")
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from trl import DPOConfig, DPOTrainer
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "simple_tasks.jsonl"
 MODEL_NAME = "distilgpt2"
@@ -39,9 +40,15 @@ def build_pref_dataset(policy, tokenizer) -> Dataset:
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="DPO demo")
     parser.add_argument("--steps", type=int, default=20)
+    parser.add_argument("--no_run", action="store_true", help="Exit after arg parsing (tests)")
     args = parser.parse_args()
+    if args.no_run:
+        return
+
+    # Heavy import only when actually running
+    from trl import DPOConfig, DPOTrainer
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     tokenizer.pad_token = tokenizer.eos_token

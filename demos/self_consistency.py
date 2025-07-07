@@ -27,8 +27,8 @@ def main():
     parser.add_argument("--samples", type=int, default=20)
     args = parser.parse_args()
 
-    tok = AutoTokenizer.from_pretrained(MODEL)
-    model = AutoModelForCausalLM.from_pretrained(MODEL)
+    tok = AutoTokenizer.from_pretrained(MODEL, use_fast=True)
+    model = AutoModelForCausalLM.from_pretrained(MODEL, use_safetensors=True)
     prompt = "Let's think step by step. " + args.prompt
     inputs = tok(prompt, return_tensors="pt")
 

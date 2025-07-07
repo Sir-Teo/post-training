@@ -7,6 +7,7 @@ signals (random noisy reward) and fitting the same model.
 Run:
     python demos/reward_modeling.py
 """
+import argparse
 from pathlib import Path
 import random
 import torch, torch.nn as nn
@@ -27,9 +28,14 @@ class RewardModel(nn.Module):
         return self.scorer(cls).squeeze(-1)
 
 def main():
+    parser = argparse.ArgumentParser(description="Reward modeling demo")
+    parser.add_argument("--no_run", action="store_true", help="Exit after arg parsing (tests)")
+    args = parser.parse_args()
+    if args.no_run:
+        return
     ds = load_dataset("json", data_files=str(DATA), split="train")
-    tok = AutoTokenizer.from_pretrained(MODEL)
-    base = AutoModel.from_pretrained(MODEL)
+    tok = AutoTokenizer.from_pretrained(MODEL, use_fast=True)
+    base = AutoModel.from_pretrained(MODEL, use_safetensors=True)
     model = RewardModel(base)
     opt = torch.optim.AdamW(model.parameters(), lr=5e-5)
 
