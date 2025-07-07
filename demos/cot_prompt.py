@@ -10,6 +10,8 @@ from pathlib import Path
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
+import argparse
+
 MODEL_NAME = "distilgpt2"
 
 def generate(model, tok, prompt, max_new=64):
@@ -19,6 +21,12 @@ def generate(model, tok, prompt, max_new=64):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Chain-of-Thought prompting demo")
+    parser.add_argument("--no_run", action="store_true", help="Just parse args and exit (used for tests)")
+    args = parser.parse_args()
+    if args.no_run:
+        return
+
     tok = AutoTokenizer.from_pretrained(MODEL_NAME)
     model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
 

@@ -11,6 +11,8 @@ Then type questions; Ctrl+C to quit.
 import readline  # noqa: F401 enables arrow-key history on mac
 import textwrap
 from collections import deque
+import argparse
+
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
@@ -24,6 +26,12 @@ def summarise(memory):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Episodic memory agent demo")
+    parser.add_argument("--no_run", action="store_true", help="Parse args and exit (used for tests)")
+    args = parser.parse_args()
+    if args.no_run:
+        return
+
     tok = AutoTokenizer.from_pretrained(MODEL)
     model = AutoModelForCausalLM.from_pretrained(MODEL)
 
