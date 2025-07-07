@@ -11,7 +11,7 @@ import argparse
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-MODEL = "sshleifer/tiny-gpt2"
+MODEL = "hf-internal-testing/tiny-random-GPT2"
 
 PROMPT_TEMPLATE = """Q: {question}\nA: {draft}\n\nWas the above answer correct and well-reasoned? If not, briefly say why.\nCritique: """
 
@@ -31,8 +31,8 @@ def main():
     if args.no_run:
         return
 
-    tok = AutoTokenizer.from_pretrained(MODEL)
-    model = AutoModelForCausalLM.from_pretrained(MODEL)
+    tok = AutoTokenizer.from_pretrained(MODEL, use_fast=True)
+    model = AutoModelForCausalLM.from_pretrained(MODEL, use_safetensors=True)
 
     # Draft answer
     draft = generate(model, tok, "Q: " + args.question + "\nA:", 32).split("A:")[-1].strip()
