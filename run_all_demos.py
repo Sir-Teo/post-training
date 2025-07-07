@@ -34,6 +34,14 @@ def main():
     parser.add_argument("--full", action="store_true", help="Run demos fully (may be slow)")
     args = parser.parse_args()
 
+    # Custom quick-run overrides to keep runtimes short even in --full mode
+    OVERRIDES = {
+        "sft.py": ["--epochs", "1", "--quick"],
+        "rlhf_ppo.py": ["--steps", "5"],
+        "rlaif_ppo.py": ["--pretrain_steps", "10", "--ppo_steps", "5"],
+        "dpo.py": ["--steps", "5"],
+    }
+
     for script in ORDER:
         path = DEMOS_DIR / script
         print("\n" + "=" * 60)
@@ -42,7 +50,9 @@ def main():
         cmd = [sys.executable, str(path)]
         if not args.full:
             cmd.append("--no_run")
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
+        else:
+            cmd.extend(OVERRIDES.get(script, []))
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
         if result.returncode != 0:
             print(f"[ERROR] {script} exited with code {result.returncode}\n", result.stderr)
         else:

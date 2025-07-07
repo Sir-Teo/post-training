@@ -58,6 +58,7 @@ def main():
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--lr", type=float, default=5e-5)
     parser.add_argument("--no_run", action="store_true", help="Exit after arg parsing (tests)")
+    parser.add_argument("--quick", action="store_true", help="Use minimal manual training loop")
     args = parser.parse_args()
     if args.no_run:
         return
@@ -74,8 +75,21 @@ def main():
     print("\n=== Samples before fine-tuning ===")
     sample_model(model, tokenizer)
 
-    # heavy training imports only when running
-    from transformers import TrainingArguments, Trainer
+    if args.quick:
+        # Manual tiny training loop on first 2 examples and 1 epoch
+        subset = tokenized_ds.select(range(2))
+        model.train()
+        optim = torch.optim.AdamW(model.parameters(), lr=args.lr)
+        for epoch in range(args.epochs):
+            for rec in subset:
+                ids = torch.tensor(rec["input_ids"]).unsqueeze(0)
+                out = model(ids, labels=ids)
+                out.loss.backward()
+                optim.step(); optim.zero_grad()
+        print("(quick SFT loop completed)")
+    else:
+        # heavy training imports only when full mode requested
+        from transformers import TrainingArguments, Trainer
 
     training_args = TrainingArguments(
         output_dir="/tmp/sft-demo",
