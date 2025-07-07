@@ -22,10 +22,13 @@ def extract_number(text:str):
     return int(m.group(1)) if m else None
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Self-consistency demo")
     parser.add_argument("--prompt", default="If you have 8 bananas and eat 3, how many remain?", type=str)
     parser.add_argument("--samples", type=int, default=20)
+    parser.add_argument("--no_run", action="store_true", help="Exit after arg parsing (tests)")
     args = parser.parse_args()
+    if args.no_run:
+        return
 
     tok = AutoTokenizer.from_pretrained(MODEL, use_fast=True)
     model = AutoModelForCausalLM.from_pretrained(MODEL, use_safetensors=True)

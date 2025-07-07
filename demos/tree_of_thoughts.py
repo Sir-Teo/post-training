@@ -12,6 +12,8 @@ Run:
     python demos/tree_of_thoughts.py --question "Multiply 3 by 7 then add 4."
 """
 import argparse
+import os
+os.environ.setdefault("TRANSFORMERS_NO_TORCHVISION_IMPORTS", "1")
 import networkx as nx
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -34,8 +36,8 @@ def expand(model, tok, state: str, k: int):
 
 
 def tot_search(question: str):
-    tok = AutoTokenizer.from_pretrained(MODEL)
-    model = AutoModelForCausalLM.from_pretrained(MODEL)
+    tok = AutoTokenizer.from_pretrained(MODEL, use_fast=True)
+    model = AutoModelForCausalLM.from_pretrained(MODEL, use_safetensors=True)
 
     root = question + "\nThought: "
     G = nx.DiGraph()
@@ -59,9 +61,12 @@ def tot_search(question: str):
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Tree-of-Thoughts demo")
     parser.add_argument("--question", default="If you have 2 cookies and get 3 more, how many in total?", type=str)
+    parser.add_argument("--no_run", action="store_true", help="Exit after arg parsing (tests)")
     args = parser.parse_args()
+    if args.no_run:
+        return
     answer = tot_search(args.question)
     print("Best answer tree leaf:\n", answer)
 
