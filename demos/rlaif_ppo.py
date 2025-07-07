@@ -87,7 +87,11 @@ def main():
         return
 
     # Lazy import after --no_run check
-    from trl import PPOConfig, PPOTrainer
+    try:
+        from trl import PPOConfig, PPOTrainer
+    except Exception as e:
+        print(f"[WARN] Could not import TRL (trl). Skipping RLAIF PPO demo: {e}")
+        return
 
     tok = AutoTokenizer.from_pretrained(MODEL_NAME)
     tok.pad_token = tok.eos_token

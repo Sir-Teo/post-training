@@ -53,7 +53,11 @@ def main():
         return
 
     # Import TRL lazily to avoid heavy deps during --no_run test mode
-    from trl import PPOTrainer, PPOConfig
+    try:
+        from trl import PPOTrainer, PPOConfig
+    except Exception as e:
+        print(f"[WARN] Could not import TRL (trl). Skipping RLHF PPO demo: {e}")
+        return
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     tokenizer.pad_token = tokenizer.eos_token

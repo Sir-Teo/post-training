@@ -48,7 +48,11 @@ def main():
         return
 
     # Heavy import only when actually running
-    from trl import DPOConfig, DPOTrainer
+    try:
+        from trl import DPOConfig, DPOTrainer
+    except Exception as e:
+        print(f"[WARN] Could not import TRL (trl). Skipping DPO demo: {e}")
+        return
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     tokenizer.pad_token = tokenizer.eos_token
