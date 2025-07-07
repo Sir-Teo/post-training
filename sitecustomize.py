@@ -10,11 +10,17 @@ features, so a minimal stub is perfectly sufficient.
 import sys
 import types
 
-if "torchvision" not in sys.modules:
-    stub = types.ModuleType("torchvision")
-    # create common sub-modules transformers tries to access
-    stub.transforms = types.ModuleType("torchvision.transforms")
-    stub.datasets = types.ModuleType("torchvision.datasets")
-    sys.modules["torchvision"] = stub
-    sys.modules["torchvision.transforms"] = stub.transforms
-    sys.modules["torchvision.datasets"] = stub.datasets
+# Always stub torchvision to avoid heavy/broken vision deps.
+stub = types.ModuleType("torchvision")
+stub.transforms = types.ModuleType("torchvision.transforms")
+# Minimal placeholder for torchvision.transforms.InterpolationMode enum used by transformers
+class _InterpolationMode:
+    BILINEAR = 2
+    BICUBIC = 3
+    NEAREST = 0
+
+stub.transforms.InterpolationMode = _InterpolationMode
+stub.datasets = types.ModuleType("torchvision.datasets")
+# Replace/insert into sys.modules unconditionally
+for name in ("torchvision", "torchvision.transforms", "torchvision.datasets"):
+    sys.modules[name] = getattr(stub, name.split(".")[-1], stub) if "." in name else stub

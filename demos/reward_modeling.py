@@ -7,6 +7,8 @@ signals (random noisy reward) and fitting the same model.
 Run:
     python demos/reward_modeling.py
 """
+import os
+os.environ.setdefault("TRANSFORMERS_NO_TORCHVISION_IMPORTS", "1")
 import argparse
 from pathlib import Path
 import random
@@ -35,7 +37,11 @@ def main():
         return
     ds = load_dataset("json", data_files=str(DATA), split="train")
     tok = AutoTokenizer.from_pretrained(MODEL, use_fast=True)
-    base = AutoModel.from_pretrained(MODEL, use_safetensors=True)
+    try:
+        base = AutoModel.from_pretrained(MODEL, use_safetensors=True)
+    except Exception as e:
+        print(f"[WARN] Could not load DistilBERT model; skipping Reward Modeling demo: {e}")
+        return
     model = RewardModel(base)
     opt = torch.optim.AdamW(model.parameters(), lr=5e-5)
 
